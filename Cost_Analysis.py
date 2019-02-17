@@ -1,20 +1,23 @@
 
 # coding: utf-8
 
-# In[25]:
+# In[ ]:
 
 
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[26]:
+# In[ ]:
 
 
-#clean data by chopping off rows
-def clean_data(input):
-    new_index = input.reset_index() #add index row
+def load_data(file_name):
+    DATA_PATH = os.path.join(os.getcwd(),"data")
+    data = pd.read_excel(os.path.join(DATA_PATH, file_name))
+    
+    new_index = data.reset_index() #add index row
     new_header = new_index.iloc[1] #identify a new header
     new_data = new_index[2:] #chop off top two rows
     new_data_index = new_data.reset_index(drop=True) #reset again
@@ -22,6 +25,50 @@ def clean_data(input):
     new_data_clean.columns = new_header
 
     return new_data_clean
+
+
+# In[2]:
+
+
+carpenters = ['Carpenter Foreman', 'Carpenter', 'Dockbuilder', 'Timberman']
+laborers   = ['']
+operators  = ['']
+indirects  = ['']
+
+
+def burn_rate(data, labor_type, date_1, date_2):
+    descrip_1 = data['Description'].iloc[:,0] #reconfigure description 1
+    descrip_2 = data['Description'].iloc[:,1] #reconfigure description 2
+    df_d      = data[(data['Stamp'] > date_1)                    & (data['Stamp'] <= date_2)] #set the date range
+    df_d1c    = df_d.groupby(descrip_2)['Amount'].sum() #groupby & sum by value
+    
+    return df_d1c.reindex(labor_type) #return groupset
+    return df_d1c.reindex(labor_type).sum() #returns sum of groupset
+
+
+# In[ ]:
+
+
+# def load_data(file_name):
+#     DATA_PATH = os.path.join(os.getcwd(),"data")
+#     data = pd.read_excel(os.path.join(DATA_PATH, file_name))
+    
+#     return data
+
+
+# In[26]:
+
+
+# clean data by chopping off rows
+# def clean_data(input):
+#     new_index = input.reset_index() #add index row
+#     new_header = new_index.iloc[1] #identify a new header
+#     new_data = new_index[2:] #chop off top two rows
+#     new_data_index = new_data.reset_index(drop=True) #reset again
+#     new_data_clean = new_data_index.fillna('') #drop nan
+#     new_data_clean.columns = new_header
+
+#     return new_data_clean
 
 
 # In[27]:
